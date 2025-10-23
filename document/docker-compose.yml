@@ -1,0 +1,161 @@
+version: '3.8'
+
+services:
+  # API Gateway
+  api-gateway:
+    build: ./microservices/api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - VERIFICATION_SERVICE_URL=http://verification-service:3001
+      - AUDIT_SERVICE_URL=http://audit-service:3002
+      - CREDIT_SERVICE_URL=http://credit-service:3003
+      - REPORT_SERVICE_URL=http://report-service:3004
+      - JWT_SECRET=your-jwt-secret-key
+    depends_on:
+      - verification-service
+      - audit-service
+      - credit-service
+      - report-service
+    networks:
+      - carbon-network
+    restart: unless-stopped
+
+  # Verification Service
+  verification-service:
+    build: ./microservices/verification-service
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://verification-db:27017/verification_db
+      - PORT=3001
+    depends_on:
+      - verification-db
+    networks:
+      - carbon-network
+    restart: unless-stopped
+
+  # Audit Service
+  audit-service:
+    build: ./microservices/audit-service
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://audit-db:27017/audit_db
+      - PORT=3002
+      - VERIFICATION_SERVICE_URL=http://verification-service:3001
+      - CREDIT_SERVICE_URL=http://credit-service:3003
+    depends_on:
+      - audit-db
+    networks:
+      - carbon-network
+    restart: unless-stopped
+
+  # Credit Issuance Service
+  credit-service:
+    build: ./microservices/credit-service
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://credit-db:27017/credit_db
+      - PORT=3003
+    depends_on:
+      - credit-db
+    networks:
+      - carbon-network
+    restart: unless-stopped
+
+  # Report Service
+  report-service:
+    build: ./microservices/report-service
+    ports:
+      - "3004:3004"
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://report-db:27017/report_db
+      - PORT=3004
+      - VERIFICATION_SERVICE_URL=http://verification-service:3001
+      - AUDIT_SERVICE_URL=http://audit-service:3002
+      - CREDIT_SERVICE_URL=http://credit-service:3003
+    depends_on:
+      - report-db
+    networks:
+      - carbon-network
+    restart: unless-stopped
+
+  # Frontend
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - carbon-network
+    restart: unless-stopped
+
+  # MongoDB for Verification Service
+  verification-db:
+    image: mongo:7.0
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=verification_db
+    volumes:
+      - verification-data:/data/db
+    networks:
+      - carbon-network
+    restart: unless-stopped
+
+  # MongoDB for Audit Service
+  audit-db:
+    image: mongo:7.0
+    ports:
+      - "27018:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=audit_db
+    volumes:
+      - audit-data:/data/db
+    networks:
+      - carbon-network
+    restart: unless-stopped
+
+  # MongoDB for Credit Service
+  credit-db:
+    image: mongo:7.0
+    ports:
+      - "27019:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=credit_db
+    volumes:
+      - credit-data:/data/db
+    networks:
+      - carbon-network
+    restart: unless-stopped
+
+  # MongoDB for Report Service
+  report-db:
+    image: mongo:7.0
+    ports:
+      - "27020:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=report_db
+    volumes:
+      - report-data:/data/db
+    networks:
+      - carbon-network
+    restart: unless-stopped
+
+volumes:
+  verification-data:
+  audit-data:
+  credit-data:
+  report-data:
+
+networks:
+  carbon-network:
+    driver: bridge

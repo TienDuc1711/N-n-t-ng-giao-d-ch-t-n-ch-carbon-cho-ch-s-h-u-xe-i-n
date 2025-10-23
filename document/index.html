@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Kiểm toán và Xác minh Tín chỉ Carbon</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌱 Hệ thống Kiểm toán và Xác minh Tín chỉ Carbon</h1>
+            <p>Nền tảng xác minh và phát hành tín chỉ carbon cho xe điện</p>
+        </header>
+
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="showTab('verification')">Kiểm tra & Xác minh</button>
+            <button class="tab-btn" onclick="showTab('approval')">Duyệt Tín chỉ</button>
+            <button class="tab-btn" onclick="showTab('issuance')">Phát hành Tín chỉ</button>
+            <button class="tab-btn" onclick="showTab('reports')">Báo cáo</button>
+        </nav>
+
+        <!-- Tab Kiểm tra & Xác minh -->
+        <div id="verification" class="tab-content active">
+            <h2>📋 Kiểm tra Dữ liệu Phát thải & Hồ sơ Tín chỉ</h2>
+            
+            <div class="verification-section">
+                <h3>Danh sách Yêu cầu Chờ Xác minh</h3>
+                <div class="filter-section">
+                    <input type="text" id="searchFilter" placeholder="Tìm kiếm theo ID hoặc tên chủ xe...">
+                    <select id="statusFilter">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="pending">Chờ xác minh</option>
+                        <option value="in-review">Đang xem xét</option>
+                        <option value="verified">Đã xác minh</option>
+                    </select>
+                    <button onclick="filterRequests()">Lọc</button>
+                </div>
+                
+                <div class="requests-list" id="requestsList">
+                    <!-- Danh sách yêu cầu sẽ được load ở đây -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Duyệt Tín chỉ -->
+        <div id="approval" class="tab-content">
+            <h2>✅ Duyệt hoặc Từ chối Yêu cầu Phát hành Tín chỉ Carbon</h2>
+            
+            <div class="approval-section">
+                <div class="pending-approvals" id="pendingApprovals">
+                    <!-- Danh sách chờ duyệt sẽ được load ở đây -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Phát hành Tín chỉ -->
+        <div id="issuance" class="tab-content">
+            <h2>🎫 Cấp Tín chỉ và Ghi vào Ví Carbon</h2>
+            
+            <div class="issuance-section">
+                <div class="approved-credits" id="approvedCredits">
+                    <!-- Danh sách tín chỉ đã duyệt sẽ được load ở đây -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Báo cáo -->
+        <div id="reports" class="tab-content">
+            <h2>📊 Xuất Báo cáo Phát hành Tín chỉ Carbon</h2>
+            
+            <div class="reports-section">
+                <div class="report-filters">
+                    <label>Từ ngày:</label>
+                    <input type="date" id="fromDate">
+                    <label>Đến ngày:</label>
+                    <input type="date" id="toDate">
+                    <button onclick="generateReport()">Tạo Báo cáo</button>
+                    <button onclick="exportReport()">Xuất Excel</button>
+                </div>
+                
+                <div class="report-summary" id="reportSummary">
+                    <!-- Tóm tắt báo cáo -->
+                </div>
+                
+                <div class="report-details" id="reportDetails">
+                    <!-- Chi tiết báo cáo -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal chi tiết yêu cầu -->
+    <div id="requestModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modalContent">
+                <!-- Nội dung chi tiết yêu cầu -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
